@@ -20,7 +20,7 @@
 Server::~Server()
 {
   if( _socket )
-    close( _socket );
+    ::close( _socket );
 }
 
 void Server::setBacklog( int backlog )
@@ -31,6 +31,12 @@ void Server::setBacklog( int backlog )
 void Server::setPort( int port )
 {
   _port = port;
+}
+
+void Server::close()
+{
+  ::close( _socket );
+  _socket = -1;
 }
 
 void Server::listen()
@@ -76,7 +82,7 @@ void Server::listen()
                                        reinterpret_cast<socklen_t*>( &clientAddressLength ) );
 
     if( clientFileDescriptor == -1 )
-      throw std::runtime_error( std::string( strerror( errno ) ) );
+      break;
 
     ClientSocket clientSocket( clientFileDescriptor );
     clientSocket.write( "This is a test.\n" );

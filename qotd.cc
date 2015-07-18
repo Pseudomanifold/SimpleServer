@@ -1,8 +1,18 @@
 #include "Server.hh"
 
+#include <signal.h>
+
+Server server;
+
+void handleExitSignal( int /* signal */ )
+{
+  server.close();
+}
+
 int main( int argc, char** argv )
 {
-  Server server;
+  signal( SIGINT, handleExitSignal );
+
   server.setPort( 2048 );
   server.listen();
 

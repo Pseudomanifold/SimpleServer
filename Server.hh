@@ -11,6 +11,7 @@ public:
   void setBacklog( int backlog );
   void setPort( int port );
 
+  void close();
   void listen();
 
 private:
