@@ -60,7 +60,7 @@ int main( int argc, char** argv )
 
   signal( SIGINT, handleExitSignal );
 
-  server.setPort( 2048 );
+  server.setPort( 1041 );
 
   server.onAccept( [&] ( std::unique_ptr<ClientSocket> socket )
   {
