@@ -15,13 +15,14 @@ int main( int /* argc */, char** /* argv */ )
   signal( SIGINT, handleExitSignal );
 
   server.setPort( 2048 );
-  server.listen();
 
   server.onAccept( [] ( std::unique_ptr<ClientSocket> socket )
   {
     socket->write( "Sorry, no quote today, mate.\n" );
     socket->close();
   } );
+
+  server.listen();
 
   return 0;
 }
