@@ -47,6 +47,16 @@ void Server::listen()
   if( _socket == -1 )
     throw std::runtime_error( std::string( strerror( errno ) ) );
 
+  {
+    int option = 1;
+
+    setsockopt( _socket,
+                SOL_SOCKET,
+                SO_REUSEADDR,
+                reinterpret_cast<const void*>( &option ),
+                sizeof( option ) );
+  }
+
   sockaddr_in socketAddress;
 
   std::fill( reinterpret_cast<char*>( &socketAddress ),
