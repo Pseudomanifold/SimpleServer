@@ -9,6 +9,7 @@ public:
   ClientSocket( int fileDescriptor );
   ~ClientSocket();
 
+  void close();
   void write( const std::string& data );
 
   ClientSocket( const ClientSocket& )            = delete;

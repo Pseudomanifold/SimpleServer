@@ -1,3 +1,4 @@
+#include "ClientSocket.hh"
 #include "Server.hh"
 
 #include <signal.h>
@@ -9,12 +10,18 @@ void handleExitSignal( int /* signal */ )
   server.close();
 }
 
-int main( int argc, char** argv )
+int main( int /* argc */, char** /* argv */ )
 {
   signal( SIGINT, handleExitSignal );
 
   server.setPort( 2048 );
   server.listen();
+
+  server.onAccept( [] ( std::unique_ptr<ClientSocket> socket )
+  {
+    socket->write( "Sorry, no quote today, mate.\n" );
+    socket->close();
+  } );
 
   return 0;
 }

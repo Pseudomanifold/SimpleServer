@@ -13,9 +13,10 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <future>
+#include <memory>
 #include <stdexcept>
 #include <string>
-#include <thread>
 
 Server::~Server()
 {
@@ -84,7 +85,7 @@ void Server::listen()
     if( clientFileDescriptor == -1 )
       break;
 
-    ClientSocket clientSocket( clientFileDescriptor );
-    clientSocket.write( "This is a test.\n" );
+    auto clientSocket = std::unique_ptr<ClientSocket>( new ClientSocket( clientFileDescriptor ) );
+    auto result       = std::async( std::launch::async, _handleAccept, std::move( clientSocket ) );
   }
 }

@@ -16,7 +16,13 @@ ClientSocket::ClientSocket( int fileDescriptor )
 
 ClientSocket::~ClientSocket()
 {
-  close( _fileDescriptor );
+  this->close();
+}
+
+void ClientSocket::close()
+{
+  ::close( _fileDescriptor );
+  _fileDescriptor = -1;
 }
 
 void ClientSocket::write( const std::string& data )

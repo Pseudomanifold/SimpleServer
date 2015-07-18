@@ -1,13 +1,20 @@
 CMAKE_MINIMUM_REQUIRED( VERSION 3.1 )
 
-PROJECT( SimpleServer CXX )
+PROJECT( SimpleServer CXX C )
 
 SET( CMAKE_CXX_STANDARD 11 )
 
 SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic" )
 
+FIND_PACKAGE( Threads )
+
 ADD_EXECUTABLE( qotd
   qotd.cc
   ClientSocket.cc
   Server.cc
+)
+
+
+TARGET_LINK_LIBRARIES( qotd
+  ${CMAKE_THREAD_LIBS_INIT}
 )
