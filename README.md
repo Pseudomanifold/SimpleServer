@@ -4,6 +4,9 @@ This repository contains [my](http://bastian.rieck.ru) implementation of
 a simple TCP/IP server in C++. I started fiddling with this to learn
 more about UNIX network programming.
 
+See [my blog](http://bastian.rieck.ru/blog/posts/2015/sockets_ordeal_cxx11) for
+additional information and comments.
+
 ## How do I use the API?
 
 The sources are meant to become an API when they grow up. At present,
