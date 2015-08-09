@@ -14,7 +14,12 @@ ADD_EXECUTABLE( qotd
   Server.cc
 )
 
+TARGET_LINK_LIBRARIES( qotd ${CMAKE_THREAD_LIBS_INIT} )
 
-TARGET_LINK_LIBRARIES( qotd
-  ${CMAKE_THREAD_LIBS_INIT}
+ADD_EXECUTABLE( echo
+  echo.cc
+  ClientSocket.cc
+  Server.cc
 )
+
+TARGET_LINK_LIBRARIES( echo ${CMAKE_THREAD_LIBS_INIT} )
