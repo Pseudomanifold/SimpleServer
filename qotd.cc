@@ -62,10 +62,13 @@ int main( int argc, char** argv )
 
   server.setPort( 1041 );
 
-  server.onAccept( [&] ( std::unique_ptr<ClientSocket> socket )
+  server.onAccept( [&] ( std::weak_ptr<ClientSocket> socket )
   {
-    socket->write( quotes.at( distribution( rng ) ) );
-    socket->close();
+    if( auto s = socket.lock() )
+    {
+      s->write( quotes.at( distribution( rng ) ) );
+      s->close();
+    }
   } );
 
   server.listen();

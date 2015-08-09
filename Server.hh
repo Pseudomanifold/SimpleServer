@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 class ClientSocket;
 
@@ -27,7 +28,8 @@ private:
   int _port    = -1;
   int _socket  = -1;
 
-  std::function< void ( std::unique_ptr<ClientSocket> socket ) > _handleAccept;
+  std::function< void ( std::weak_ptr<ClientSocket> socket ) > _handleAccept;
+  std::vector< std::shared_ptr<ClientSocket> > _clientSockets;
 };
 
 #endif

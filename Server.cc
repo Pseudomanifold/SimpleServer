@@ -122,8 +122,10 @@ void Server::listen()
         if( clientFileDescriptor == -1 )
           break;
 
-        auto clientSocket = std::unique_ptr<ClientSocket>( new ClientSocket( clientFileDescriptor ) );
-        auto result       = std::async( std::launch::async, _handleAccept, std::move( clientSocket ) );
+        auto clientSocket = std::make_shared<ClientSocket>( clientFileDescriptor );
+        auto result       = std::async( std::launch::async, _handleAccept, clientSocket );
+
+        _clientSockets.push_back( clientSocket );
       }
     }
   }
