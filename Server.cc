@@ -122,11 +122,56 @@ void Server::listen()
         if( clientFileDescriptor == -1 )
           break;
 
-        auto clientSocket = std::make_shared<ClientSocket>( clientFileDescriptor );
+        FD_SET( clientFileDescriptor, &masterSocketSet );
+        highestFileDescriptor = std::max( highestFileDescriptor, clientFileDescriptor );
+
+        auto clientSocket = std::make_shared<ClientSocket>( clientFileDescriptor, *this );
         auto result       = std::async( std::launch::async, _handleAccept, clientSocket );
 
         _clientSockets.push_back( clientSocket );
       }
+
+      // Known client socket
+      else
+      {
+        char buffer[2] = {0,0};
+
+        // Let's attempt to read at least one byte from the connection, but
+        // without removing it from the queue. That way, the server can see
+        // whether a client has closed the connection.
+        int result = recv( i, buffer, 2, MSG_PEEK ); 
+        if( result <= 0 )
+        {
+          FD_CLR( i, &masterSocketSet );
+
+          _clientSockets.erase( std::remove_if( _clientSockets.begin(), _clientSockets.end(),
+                                                [&] ( std::shared_ptr<ClientSocket> socket )
+                                                {
+                                                  return socket->fileDescriptor() == i;
+                                                } ),
+                                _clientSockets.end() );
+        }
+      }
     }
+
+    for( auto&& fileDescriptor : _staleFileDescriptors )
+    {
+      FD_CLR( fileDescriptor, &masterSocketSet );
+      ::close( fileDescriptor );
+    }
+
+    _staleFileDescriptors.clear();
   }
+}
+
+void Server::close( int fileDescriptor )
+{
+  _clientSockets.erase( std::remove_if( _clientSockets.begin(), _clientSockets.end(),
+                                        [&] ( std::shared_ptr<ClientSocket> socket )
+                                        {
+                                          return socket->fileDescriptor() == fileDescriptor;
+                                        } ),
+                                        _clientSockets.end() );
+
+  _staleFileDescriptors.push_back( fileDescriptor );
 }

@@ -1,4 +1,5 @@
 #include "ClientSocket.hh"
+#include "Server.hh"
 
 #include <errno.h>
 #include <string.h>
@@ -9,8 +10,9 @@
 
 #include <stdexcept>
 
-ClientSocket::ClientSocket( int fileDescriptor )
+ClientSocket::ClientSocket( int fileDescriptor, Server& server )
   : _fileDescriptor( fileDescriptor )
+  , _server( server )
 {
 }
 
@@ -19,10 +21,14 @@ ClientSocket::~ClientSocket()
   this->close();
 }
 
+int ClientSocket::fileDescriptor() const
+{
+  return _fileDescriptor;
+}
+
 void ClientSocket::close()
 {
-  ::close( _fileDescriptor );
-  _fileDescriptor = -1;
+  _server.close( _fileDescriptor );
 }
 
 void ClientSocket::write( const std::string& data )

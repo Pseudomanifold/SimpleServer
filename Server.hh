@@ -23,6 +23,8 @@ public:
     _handleAccept = f;
   }
 
+  void close( int fileDescriptor );
+
 private:
   int _backlog =  1;
   int _port    = -1;
@@ -30,6 +32,8 @@ private:
 
   std::function< void ( std::weak_ptr<ClientSocket> socket ) > _handleAccept;
   std::vector< std::shared_ptr<ClientSocket> > _clientSockets;
+
+  std::vector<int> _staleFileDescriptors;
 };
 
 #endif

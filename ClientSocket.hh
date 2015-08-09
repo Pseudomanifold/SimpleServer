@@ -3,11 +3,15 @@
 
 #include <string>
 
+class Server;
+
 class ClientSocket
 {
 public:
-  ClientSocket( int fileDescriptor );
+  ClientSocket( int fileDescriptor, Server& server );
   ~ClientSocket();
+
+  int fileDescriptor() const;
 
   void close();
   void write( const std::string& data );
@@ -17,6 +21,7 @@ public:
 
 private:
   int _fileDescriptor = -1;
+  Server& _server;
 };
 
 #endif
