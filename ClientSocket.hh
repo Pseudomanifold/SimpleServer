@@ -16,6 +16,8 @@ public:
   void close();
   void write( const std::string& data );
 
+  std::string read();
+
   ClientSocket( const ClientSocket& )            = delete;
   ClientSocket& operator=( const ClientSocket& ) = delete;
 

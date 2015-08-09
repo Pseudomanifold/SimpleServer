@@ -41,3 +41,19 @@ void ClientSocket::write( const std::string& data )
   if( result == -1 )
     throw std::runtime_error( std::string( strerror( errno ) ) );
 }
+
+std::string ClientSocket::read()
+{
+  std::string message;
+
+  char buffer[256] = { 0 };
+  ssize_t numBytes = 0;
+
+  while( ( numBytes = recv( _fileDescriptor, buffer, sizeof(buffer), MSG_DONTWAIT ) ) > 0 )
+  {
+    buffer[numBytes]  = 0;
+    message          += buffer;
+  }
+
+  return message;
+}
