@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <vector>
 
 class ClientSocket;
@@ -34,6 +35,7 @@ private:
   std::vector< std::shared_ptr<ClientSocket> > _clientSockets;
 
   std::vector<int> _staleFileDescriptors;
+  std::mutex _staleFileDescriptorsMutex;
 };
 
 #endif

@@ -154,18 +154,26 @@ void Server::listen()
       }
     }
 
-    for( auto&& fileDescriptor : _staleFileDescriptors )
+    // Handle stale connections. This is in an extra scope so that the
+    // lock guard unlocks the mutex automatically.
     {
-      FD_CLR( fileDescriptor, &masterSocketSet );
-      ::close( fileDescriptor );
-    }
+      std::lock_guard<std::mutex> lock( _staleFileDescriptorsMutex );
 
-    _staleFileDescriptors.clear();
+      for( auto&& fileDescriptor : _staleFileDescriptors )
+      {
+        FD_CLR( fileDescriptor, &masterSocketSet );
+        ::close( fileDescriptor );
+      }
+
+      _staleFileDescriptors.clear();
+    }
   }
 }
 
 void Server::close( int fileDescriptor )
 {
+  std::lock_guard<std::mutex> lock( _staleFileDescriptorsMutex );
+
   _clientSockets.erase( std::remove_if( _clientSockets.begin(), _clientSockets.end(),
                                         [&] ( std::shared_ptr<ClientSocket> socket )
                                         {
