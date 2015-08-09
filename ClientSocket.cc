@@ -18,7 +18,6 @@ ClientSocket::ClientSocket( int fileDescriptor, Server& server )
 
 ClientSocket::~ClientSocket()
 {
-  this->close();
 }
 
 int ClientSocket::fileDescriptor() const

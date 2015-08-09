@@ -20,8 +20,7 @@
 
 Server::~Server()
 {
-  if( _socket )
-    ::close( _socket );
+  this->close();
 }
 
 void Server::setBacklog( int backlog )
@@ -36,8 +35,13 @@ void Server::setPort( int port )
 
 void Server::close()
 {
-  ::close( _socket );
-  _socket = -1;
+  if( _socket )
+    ::close( _socket );
+
+  for( auto&& clientSocket : _clientSockets )
+    clientSocket->close();
+
+  _clientSockets.clear();
 }
 
 void Server::listen()
@@ -139,17 +143,15 @@ void Server::listen()
         // Let's attempt to read at least one byte from the connection, but
         // without removing it from the queue. That way, the server can see
         // whether a client has closed the connection.
-        int result = recv( i, buffer, 2, MSG_PEEK ); 
+        int result = recv( i, buffer, 1, MSG_PEEK ); 
+    
         if( result <= 0 )
         {
           FD_CLR( i, &masterSocketSet );
 
-          _clientSockets.erase( std::remove_if( _clientSockets.begin(), _clientSockets.end(),
-                                                [&] ( std::shared_ptr<ClientSocket> socket )
-                                                {
-                                                  return socket->fileDescriptor() == i;
-                                                } ),
-                                _clientSockets.end() );
+          // FIXME: This is horrible; it would be easier to use erase-remove
+          // here, but this leads to a deadlock.
+          this->close( i );
         }
         else
         {
@@ -160,9 +162,7 @@ void Server::listen()
                                         } );
 
           if( itSocket != _clientSockets.end() )
-          {
             auto result = std::async( std::launch::async, _handleRead, *itSocket );
-          }
         }
       }
     }
