@@ -151,6 +151,19 @@ void Server::listen()
                                                 } ),
                                 _clientSockets.end() );
         }
+        else
+        {
+          auto itSocket = std::find_if( _clientSockets.begin(), _clientSockets.end(),
+                                        [&] ( std::shared_ptr<ClientSocket> socket )
+                                        {
+                                          return socket->fileDescriptor() == i;
+                                        } );
+
+          if( itSocket != _clientSockets.end() )
+          {
+            auto result = std::async( std::launch::async, _handleRead, *itSocket );
+          }
+        }
       }
     }
 

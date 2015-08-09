@@ -24,6 +24,11 @@ public:
     _handleAccept = f;
   }
 
+  template <class F> void onRead( F&& f )
+  {
+    _handleRead = f;
+  }
+
   void close( int fileDescriptor );
 
 private:
@@ -32,6 +37,8 @@ private:
   int _socket  = -1;
 
   std::function< void ( std::weak_ptr<ClientSocket> socket ) > _handleAccept;
+  std::function< void ( std::weak_ptr<ClientSocket> socket ) > _handleRead;
+
   std::vector< std::shared_ptr<ClientSocket> > _clientSockets;
 
   std::vector<int> _staleFileDescriptors;
