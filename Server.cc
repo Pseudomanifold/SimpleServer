@@ -83,19 +83,48 @@ void Server::listen()
       throw std::runtime_error( std::string( strerror( errno ) ) );
   }
 
+  fd_set masterSocketSet;
+  fd_set clientSocketSet;
+
+  FD_ZERO( &masterSocketSet );
+  FD_SET( _socket, &masterSocketSet );
+
+  int highestFileDescriptor = _socket;
+
   while( 1 )
   {
-    sockaddr_in clientAddress;
-    auto clientAddressLength = sizeof(clientAddress);
+    clientSocketSet = masterSocketSet;
 
-    int clientFileDescriptor = accept( _socket,
-                                       reinterpret_cast<sockaddr*>( &clientAddress ),
-                                       reinterpret_cast<socklen_t*>( &clientAddressLength ) );
+    int numFileDescriptors = select( highestFileDescriptor + 1,
+                                     &clientSocketSet,
+                                     nullptr,   // no descriptors to write into
+                                     nullptr,   // no descriptors with exceptions
+                                     nullptr ); // no timeout
 
-    if( clientFileDescriptor == -1 )
+    if( numFileDescriptors == -1 )
       break;
 
-    auto clientSocket = std::unique_ptr<ClientSocket>( new ClientSocket( clientFileDescriptor ) );
-    auto result       = std::async( std::launch::async, _handleAccept, std::move( clientSocket ) );
+    for( int i = 0; i <= highestFileDescriptor; i++ )
+    {
+      if( !FD_ISSET( i, &clientSocketSet ) )
+        continue;
+
+      // Handle new client
+      if( i == _socket )
+      {
+        sockaddr_in clientAddress;
+        auto clientAddressLength = sizeof(clientAddress);
+
+        int clientFileDescriptor = accept( _socket,
+                                           reinterpret_cast<sockaddr*>( &clientAddress ),
+                                           reinterpret_cast<socklen_t*>( &clientAddressLength ) );
+
+        if( clientFileDescriptor == -1 )
+          break;
+
+        auto clientSocket = std::unique_ptr<ClientSocket>( new ClientSocket( clientFileDescriptor ) );
+        auto result       = std::async( std::launch::async, _handleAccept, std::move( clientSocket ) );
+      }
+    }
   }
 }
