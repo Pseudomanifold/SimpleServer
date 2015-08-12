@@ -17,7 +17,7 @@ void handleExitSignal( int /* signal */ )
   server.close();
 }
 
-int main( int argc, char** argv )
+int main( int /* argc */, char** /* argv */ )
 {
   signal( SIGINT, handleExitSignal );
 
