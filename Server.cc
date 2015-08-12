@@ -143,8 +143,8 @@ void Server::listen()
         // Let's attempt to read at least one byte from the connection, but
         // without removing it from the queue. That way, the server can see
         // whether a client has closed the connection.
-        int result = recv( i, buffer, 1, MSG_PEEK ); 
-    
+        int result = recv( i, buffer, 1, MSG_PEEK );
+
         if( result <= 0 )
         {
           FD_CLR( i, &masterSocketSet );
