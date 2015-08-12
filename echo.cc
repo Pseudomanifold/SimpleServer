@@ -23,10 +23,6 @@ int main( int /* argc */, char** /* argv */ )
 
   server.setPort( 1031 );
 
-  server.onAccept( [&] ( std::weak_ptr<ClientSocket> /* socket */ )
-  {
-  } );
-
   server.onRead( [&] ( std::weak_ptr<ClientSocket> socket )
   {
     if( auto s = socket.lock() )
