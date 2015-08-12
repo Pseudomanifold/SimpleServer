@@ -4,14 +4,17 @@ This repository contains [my](http://bastian.rieck.ru) implementation of
 a simple TCP/IP server in C++. I started fiddling with this to learn
 more about UNIX network programming.
 
-See [my blog](http://bastian.rieck.ru/blog/posts/2015/sockets_ordeal_cxx11) for
+See [the initial blog post](http://bastian.rieck.ru/blog/posts/2015/sockets_ordeal_cxx11)
+or [its successor](http://bastian.rieck.ru/blog/posts/2015/synchronous_multiplexing_sockets_cxx11) for
 additional information and comments.
 
 ## How do I use the API?
 
-The sources are meant to become an API when they grow up. At present,
-there is only an implementation of a *Quote of the Day* service. See
-`qotd.cc` for more details.
+The sources are meant to become an API when they grow up. At present
+there are two server implementations:
+
+* `qotd.cc` contains a *Quote of the Day* service implementation
+* `echo.cc` contains an *echo* service implementation
 
 ## What's cool about it?
 
@@ -47,6 +50,17 @@ compile this as root...
 
 Thus, the QOTD server runs under port 1041, which is 1024+17 and hence
 quite clever.
+
+## How do I run my own echo server?
+
+    $ mkdir build
+    $ cd build
+    $ cmake ../
+    $ make
+    $ ./echo
+
+Note that the server runs under port 1031, which is 1024+7 and hence
+quite clever as well (see the answer to the previous question).
 
 ## Licence
 
