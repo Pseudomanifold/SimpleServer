@@ -130,7 +130,9 @@ void Server::listen()
         highestFileDescriptor = std::max( highestFileDescriptor, clientFileDescriptor );
 
         auto clientSocket = std::make_shared<ClientSocket>( clientFileDescriptor, *this );
-        auto result       = std::async( std::launch::async, _handleAccept, clientSocket );
+
+        if( _handleAccept )
+          auto result = std::async( std::launch::async, _handleAccept, clientSocket );
 
         _clientSockets.push_back( clientSocket );
       }
@@ -161,7 +163,7 @@ void Server::listen()
                                           return socket->fileDescriptor() == i;
                                         } );
 
-          if( itSocket != _clientSockets.end() )
+          if( itSocket != _clientSockets.end() && _handleRead )
             auto result = std::async( std::launch::async, _handleRead, *itSocket );
         }
       }
