@@ -108,6 +108,11 @@ void Server::listen()
     if( numFileDescriptors == -1 )
       break;
 
+    // Will be updated in the loop as soon as a new client has been
+    // accepted. This saves us from modifying the variable *during*
+    // the loop execution.
+    int newHighestFileDescriptor = highestFileDescriptor;
+
     for( int i = 0; i <= highestFileDescriptor; i++ )
     {
       if( !FD_ISSET( i, &clientSocketSet ) )
@@ -127,7 +132,7 @@ void Server::listen()
           break;
 
         FD_SET( clientFileDescriptor, &masterSocketSet );
-        highestFileDescriptor = std::max( highestFileDescriptor, clientFileDescriptor );
+        newHighestFileDescriptor = std::max( highestFileDescriptor, clientFileDescriptor );
 
         auto clientSocket = std::make_shared<ClientSocket>( clientFileDescriptor, *this );
 
@@ -168,6 +173,10 @@ void Server::listen()
         }
       }
     }
+
+    // Update the file descriptor if a new client has been accepted in
+    // the loop above.
+    highestFileDescriptor = std::max( newHighestFileDescriptor, highestFileDescriptor );
 
     // Handle stale connections. This is in an extra scope so that the
     // lock guard unlocks the mutex automatically.
