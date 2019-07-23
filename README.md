@@ -62,6 +62,11 @@ quite clever.
 Note that the server runs under port 1031, which is 1024+7 and hence
 quite clever as well (see the answer to the previous question).
 
+## Acknowledgements
+
+Thanks to [Uri London](https://github.com/uri247) for very useful
+suggestions that helped improve the code.
+
 ## Licence
 
 The code is released under an MIT licence.
