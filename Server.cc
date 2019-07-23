@@ -154,10 +154,9 @@ void Server::listen()
 
         if( result <= 0 )
         {
-          FD_CLR( i, &masterSocketSet );
-
-          // FIXME: This is horrible; it would be easier to use erase-remove
-          // here, but this leads to a deadlock.
+          // It would be easier to use erase-remove here, but this leads
+          // to a deadlock. Instead, the current socket will be added to
+          // the list of stale sockets and be closed later on.
           this->close( i );
         }
         else
